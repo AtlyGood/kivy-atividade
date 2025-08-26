@@ -1,0 +1,50 @@
+<IdadeAppLayout>:
+    orientation: 'vertical'
+    padding: 50
+    spacing: 20
+    
+    Label:
+        text: 'Verificador de Idade'
+        font_size: '24sp'
+        bold: True
+        color: 0.2, 0.4, 0.8, 1
+        size_hint_y: None
+        height: 60
+    
+    TextInput:
+        id: nome_input
+        hint_text: 'Digite seu nome'
+        size_hint_y: None
+        height: 50
+        font_size: '18sp'
+        background_color: 0.95, 0.95, 0.95, 1
+    
+    TextInput:
+        id: idade_input
+        hint_text: 'Digite sua idade (apenas números)'
+        size_hint_y: None
+        height: 50
+        font_size: '18sp'
+        input_filter: 'int'
+        background_color: 0.95, 0.95, 0.95, 1
+    
+    Button:
+        text: 'Enviar'
+        size_hint_y: None
+        height: 60
+        font_size: '18sp'
+        background_color: 0.2, 0.6, 0.2, 1
+        color: 1, 1, 1, 1
+        on_press: root.verificar_idade()
+    
+    Label:
+        id: resultado_label
+        text: ''
+        font_size: '20sp'
+        bold: True
+        color: 0.3, 0.3, 0.3, 1
+        size_hint_y: None
+        height: 60
+    
+    Widget:
+        size_hint_y: 0.5
