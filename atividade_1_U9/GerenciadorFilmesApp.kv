@@ -1,0 +1,108 @@
+#:kivy 2.0.0
+
+<GerenciadorTelas>:
+    TelaCadastro:
+        name: 'cadastro'
+    TelaListagem:
+        name: 'listagem'
+
+<TelaCadastro>:
+    titulo_input: titulo_input
+    genero_input: genero_input
+    ano_input: ano_input
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 15
+        
+        Label:
+            text: 'Cadastro de Filme'
+            font_size: 24
+            bold: True
+            size_hint_y: 0.2
+        
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 10
+            
+            Label:
+                text: 'Título:'
+                size_hint_y: None
+                height: 30
+            
+            TextInput:
+                id: titulo_input
+                multiline: False
+                size_hint_y: None
+                height: 40
+            
+            Label:
+                text: 'Gênero:'
+                size_hint_y: None
+                height: 30
+            
+            TextInput:
+                id: genero_input
+                multiline: False
+                size_hint_y: None
+                height: 40
+            
+            Label:
+                text: 'Ano de Lançamento:'
+                size_hint_y: None
+                height: 30
+            
+            TextInput:
+                id: ano_input
+                multiline: False
+                input_filter: 'int'
+                size_hint_y: None
+                height: 40
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 10
+            size_hint_y: 0.2
+            
+            Button:
+                text: 'Voltar'
+                on_release: 
+                    root.limpar_campos()
+                    app.root.current = 'listagem'
+            
+            Button:
+                text: 'Salvar'
+                background_color: 0.2, 0.8, 0.2, 1
+                on_release: root.salvar_filme()
+
+<TelaListagem>:
+    container_lista: container_lista
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        
+        Label:
+            text: 'Lista de Filmes'
+            font_size: 24
+            bold: True
+            size_hint_y: 0.1
+        
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            
+            GridLayout:
+                id: container_lista
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 5
+        
+        Button:
+            text: 'Adicionar Filme'
+            size_hint_y: 0.1
+            background_color: 0.2, 0.6, 1, 1
+            on_release: root.ir_para_cadastro()
