@@ -12,6 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
 
         .card {
@@ -22,7 +23,7 @@
             background-color: #000000;
             border-radius: 10px;
             padding: 20px;
-            
+            transition: all 0.5s ease-in-out;
         }
 
         .card h2 {
@@ -74,11 +75,13 @@
             transition: 1s;
             border-radius: 10px;
         }
+
         .actions button:hover{
             color: purple;
             background-color: #ffffff;
             transform: translateY(-5px);
         }
+
         .actions input:hover{
             color: purple;
             background-color: #ffffff;
@@ -95,39 +98,86 @@
         input.error-border {
             border: 2px solid #ff4444;
         }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: purple;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 40px 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .success-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-content {
+            transition: all 0.5s ease-in-out;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: scale(0.8);
+        }
     </style>
 </head>
 
 <body>
-    <div class="card">
-        <h2>Cadastro</h2>
-        <form id="formCadastro" onsubmit="return enviarFormulario()">
-            <label for="nome">Nome</label>
-            <input type="text" id="nome" name="nome">
-            <div class="error" id="nomeError">Por favor, preencha o nome</div>
+    <div class="card" id="mainCard">
+        <div class="form-content" id="formContent">
+            <h2>Cadastro</h2>
+            <form id="formCadastro">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome">
+                <div class="error" id="nomeError">Por favor, preencha o nome</div>
 
-            <label for="email">E-mail</label>
-            <input type="email" id="email" name="email">
-            <div class="error" id="emailError">Por favor, insira um e-mail válido</div>
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email">
+                <div class="error" id="emailError">Por favor, insira um e-mail válido</div>
 
-            <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha">
-            <div class="error" id="senhaError">A senha deve ter no mínimo 8 caracteres</div>
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha">
+                <div class="error" id="senhaError">A senha deve ter no mínimo 8 caracteres</div>
 
-            <label for="telefone">Telefone</label>
-            <input type="tel" id="telefone" name="telefone">
-            <div class="error" id="telefoneError">Por favor, insira um telefone válido (apenas números)</div>
+                <label for="telefone">Telefone</label>
+                <input type="tel" id="telefone" name="telefone">
+                <div class="error" id="telefoneError">Por favor, insira um telefone válido (apenas números)</div>
 
-            <label for="idade">Idade</label>
-            <input type="number" id="idade" name="idade">
-            <div class="error" id="idadeError">Por favor, preencha a idade</div>
+                <label for="idade">Idade</label>
+                <input type="number" id="idade" name="idade">
+                <div class="error" id="idadeError">Por favor, preencha a idade</div>
 
-            <div class="actions">
-                <input type="submit" value="Cadastrar">
-                <button type="button" onclick="limparFormulario()">Limpar</button>
-            </div>
-        </form>
+                <div class="actions">
+                    <input type="button" value="Cadastrar" onclick="enviarFormulario()">
+                    <button type="button" onclick="limparFormulario()">Limpar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✓</div>
+            Logado com sucesso!
+        </div>
     </div>
+
     <script>
         function validarFormulario() {
             let isValid = true;
@@ -162,7 +212,7 @@
                 isValid = false;
             }
             
-            if (idade === "" || idade < 0) {
+            if (idade === "" || idade < 0 || idade > 150) {
                 mostrarErro("idadeError", "Por favor, preencha uma idade válida");
                 isValid = false;
             }
@@ -211,12 +261,33 @@
             limparErros();
         }
         
+        function mostrarSucesso() {
+            const formContent = document.getElementById('formContent');
+            const successMessage = document.getElementById('successMessage');
+            const mainCard = document.getElementById('mainCard');
+            
+            // Animação de fade out do formulário
+            formContent.classList.add('fade-out');
+            
+            setTimeout(() => {
+                formContent.classList.add('hidden');
+                successMessage.style.display = 'block';
+                
+                // Ajusta o tamanho do card para a mensagem de sucesso
+                mainCard.style.height = '200px';
+                mainCard.style.display = 'flex';
+                mainCard.style.alignItems = 'center';
+                mainCard.style.justifyContent = 'center';
+            }, 500);
+        }
+        
         function enviarFormulario() {
             if (validarFormulario()) {
-                alert("Formulário enviado com sucesso!");
-                return false; // Para não recarregar a página
+                // Simula um processamento antes de mostrar sucesso
+                setTimeout(() => {
+                    mostrarSucesso();
+                }, 500);
             }
-            return false;
         }
 
         // Validação em tempo real
@@ -235,6 +306,14 @@
             } else {
                 document.getElementById("telefoneError").style.display = 'none';
                 this.classList.remove('error-border');
+            }
+        });
+
+        // Permitir submit com Enter
+        document.getElementById('formCadastro').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                enviarFormulario();
             }
         });
     </script>
