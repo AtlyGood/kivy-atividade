@@ -1,0 +1,156 @@
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Tarefas</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: black;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            max-width: 90%;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #tarefa {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #tarefa:focus {
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: hotpink;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #lista {
+            margin-top: 20px;
+            padding: 0;
+        }
+
+        li {
+            list-style: none;
+            margin: 10px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        li:hover {
+            transform: translateX(5px);
+        }
+
+        li button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        li button:hover {
+            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4);
+        }
+
+        .tarefa-texto {
+            flex: 1;
+            text-align: left;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>📝 Minha Lista de Tarefas</h2>
+        <div class="input-group">
+            <input type="text" id="tarefa" placeholder="Digite uma tarefa...">
+            <button onclick="adicionar()">Adicionar</button>
+        </div>
+        <ul id="lista"></ul>
+    </div>
+    <script>
+        function adicionar() {
+            let input = document.getElementById("tarefa");
+            let valor = input.value.trim();
+            if (valor === "") {
+                alert("Digite uma tarefa!");
+                return;
+            }
+            let li = document.createElement("li");
+            
+            let span = document.createElement("span");
+            span.className = "tarefa-texto";
+            span.innerText = valor;
+            
+            let botaoRemover = document.createElement("button");
+            botaoRemover.innerText = "Remover";
+            botaoRemover.onclick = function () {
+                li.remove();
+            };
+            
+            li.appendChild(span);
+            li.appendChild(botaoRemover);
+            document.getElementById("lista").appendChild(li);
+            input.value = "";
+            input.focus();
+        }
+
+        document.getElementById('tarefa').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                adicionar();
+            }
+        });
+    </script>
+</body>
+
+</html>
