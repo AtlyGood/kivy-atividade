@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário de Cadastro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            border: 2px solid #000000;
+            padding: 12px;
+            width: 320px;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+            background-color: #000000;
+            border-radius: 10px;
+            padding: 20px;
+            
+        }
+
+        .card h2 {
+            text-align: center;
+            margin-top: 0;
+            color: purple;
+        }
+
+        label {
+            display: block;
+            margin-top: 8px;
+            color: purple;
+        }
+
+        input {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+            box-sizing: border-box;
+            color: purple;
+            border-radius: 10px;
+        }
+
+        .actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .actions input,
+        .actions button {
+            padding: 8px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .actions input {
+            background-color: #000000;
+            color: rgb(255, 255, 255);
+            border-radius: 10px;
+            padding: 10px;
+            transition: 1s;
+        }
+
+        .actions button {
+            background-color: #000000;
+            color: white;
+            transition: 1s;
+            border-radius: 10px;
+        }
+        .actions button:hover{
+            color: purple;
+            background-color: #ffffff;
+            transform: translateY(-5px);
+        }
+        .actions input:hover{
+            color: purple;
+            background-color: #ffffff;
+            transform: translateY(-5px);
+        }
+
+        .error {
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 2px;
+            display: none;
+        }
+
+        input.error-border {
+            border: 2px solid #ff4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>Cadastro</h2>
+        <form id="formCadastro" onsubmit="return enviarFormulario()">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome">
+            <div class="error" id="nomeError">Por favor, preencha o nome</div>
+
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email">
+            <div class="error" id="emailError">Por favor, insira um e-mail válido</div>
+
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha">
+            <div class="error" id="senhaError">A senha deve ter no mínimo 8 caracteres</div>
+
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" name="telefone">
+            <div class="error" id="telefoneError">Por favor, insira um telefone válido (apenas números)</div>
+
+            <label for="idade">Idade</label>
+            <input type="number" id="idade" name="idade">
+            <div class="error" id="idadeError">Por favor, preencha a idade</div>
+
+            <div class="actions">
+                <input type="submit" value="Cadastrar">
+                <button type="button" onclick="limparFormulario()">Limpar</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function validarFormulario() {
+            let isValid = true;
+            
+            // Limpar erros anteriores
+            limparErros();
+            
+            let nome = document.getElementById("nome").value;
+            let email = document.getElementById("email").value;
+            let senha = document.getElementById("senha").value;
+            let telefone = document.getElementById("telefone").value;
+            let idade = document.getElementById("idade").value;
+            
+            // Validação de campos vazios
+            if (nome === "") {
+                mostrarErro("nomeError", "Por favor, preencha o nome");
+                isValid = false;
+            }
+            
+            if (email === "" || !validarEmail(email)) {
+                mostrarErro("emailError", "Por favor, insira um e-mail válido");
+                isValid = false;
+            }
+            
+            if (senha === "" || senha.length < 8) {
+                mostrarErro("senhaError", "A senha deve ter no mínimo 8 caracteres");
+                isValid = false;
+            }
+            
+            if (telefone === "" || !validarTelefone(telefone)) {
+                mostrarErro("telefoneError", "Por favor, insira um telefone válido (apenas números)");
+                isValid = false;
+            }
+            
+            if (idade === "" || idade < 0) {
+                mostrarErro("idadeError", "Por favor, preencha uma idade válida");
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        function validarEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+        
+        function validarTelefone(telefone) {
+            // Remove caracteres não numéricos
+            const telefoneLimpo = telefone.replace(/\D/g, '');
+            // Verifica se tem entre 10 e 11 dígitos (com DDD)
+            return telefoneLimpo.length >= 10 && telefoneLimpo.length <= 11;
+        }
+        
+        function mostrarErro(elementId, mensagem) {
+            const erroElement = document.getElementById(elementId);
+            erroElement.textContent = mensagem;
+            erroElement.style.display = 'block';
+            
+            // Adiciona borda vermelha no campo correspondente
+            const campoId = elementId.replace('Error', '');
+            const campo = document.getElementById(campoId);
+            campo.classList.add('error-border');
+        }
+        
+        function limparErros() {
+            const errors = document.querySelectorAll('.error');
+            errors.forEach(error => {
+                error.style.display = 'none';
+            });
+            
+            // Remove bordas vermelhas
+            const campos = document.querySelectorAll('input');
+            campos.forEach(campo => {
+                campo.classList.remove('error-border');
+            });
+        }
+        
+        function limparFormulario() {
+            document.getElementById("formCadastro").reset();
+            limparErros();
+        }
+        
+        function enviarFormulario() {
+            if (validarFormulario()) {
+                alert("Formulário enviado com sucesso!");
+                return false; // Para não recarregar a página
+            }
+            return false;
+        }
+
+        // Validação em tempo real
+        document.getElementById('senha').addEventListener('input', function() {
+            if (this.value.length > 0 && this.value.length < 8) {
+                mostrarErro("senhaError", "A senha deve ter no mínimo 8 caracteres");
+            } else {
+                document.getElementById("senhaError").style.display = 'none';
+                this.classList.remove('error-border');
+            }
+        });
+
+        document.getElementById('telefone').addEventListener('input', function() {
+            if (this.value.length > 0 && !validarTelefone(this.value)) {
+                mostrarErro("telefoneError", "Por favor, insira um telefone válido (apenas números)");
+            } else {
+                document.getElementById("telefoneError").style.display = 'none';
+                this.classList.remove('error-border');
+            }
+        });
+    </script>
+</body>
+
+</html>
