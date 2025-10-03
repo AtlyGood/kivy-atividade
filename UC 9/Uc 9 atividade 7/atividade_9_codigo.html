@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini CRUD - Lista de Tarefas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: black;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: grey;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: black;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-edit {
+            background: #f39c12;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .btn-edit:hover, .btn-delete:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .task-item:hover {
+            background: #e9ecef;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .feedback.show {
+            transform: translateX(0);
+        }
+
+        .success {
+            background: #27ae60;
+        }
+
+        .error {
+            background: #e74c3c;
+        }
+
+        .info {
+            background: #3498db;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .task-actions {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mini CRUD</h1>
+            <p class="subtitle">Lista de Tarefas com JSON e localStorage</p>
+        </header>
+        
+        <div class="content">
+            <div class="input-group">
+                <input type="text" id="taskInput" placeholder="Digite uma nova tarefa...">
+                <button class="btn-primary" onclick="adicionarItem()">Adicionar Tarefa</button>
+            </div>
+            
+            <ul class="task-list" id="taskList">
+                <!-- Itens serão inseridos aqui dinamicamente -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Array para armazenar as tarefas
+        let tarefas = [];
+
+        // Elementos do DOM
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+
+        // Inicializar a aplicação
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarLocalStorage();
+            listarItens();
+            
+            // Adicionar tarefa ao pressionar Enter
+            taskInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    adicionarItem();
+                }
+            });
+        });
+
+        // ✅ Adicionar item
+        function adicionarItem() {
+            const texto = taskInput.value.trim();
+            
+            // Validação
+            if (texto === '') {
+                mostrarFeedback('Por favor, digite uma tarefa!', 'error');
+                return;
+            }
+            
+            if (tarefas.includes(texto)) {
+                mostrarFeedback('Esta tarefa já existe na lista!', 'error');
+                return;
+            }
+            
+            // Adicionar à lista
+            tarefas.push(texto);
+            salvarLocalStorage();
+            listarItens();
+            
+            // Limpar input e mostrar feedback
+            taskInput.value = '';
+            mostrarFeedback('Tarefa adicionada com sucesso! ✅', 'success');
+        }
+
+        // ✅ Listar itens
+        function listarItens() {
+            taskList.innerHTML = '';
+            
+            if (tarefas.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <div>📋</div>
+                        <h3>Nenhuma tarefa cadastrada</h3>
+                        <p>Adicione sua primeira tarefa usando o campo acima!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            tarefas.forEach((tarefa, index) => {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.innerHTML = `
+                    <span class="task-text">${tarefa}</span>
+                    <div class="task-actions">
+                        <button class="btn-edit" onclick="editarItem(${index})">✏️ Editar</button>
+                        <button class="btn-delete" onclick="removerItem(${index})">🗑️ Excluir</button>
+                    </div>
+                `;
+                taskList.appendChild(li);
+            });
+        }
+
+        // ✅ Remover item
+        function removerItem(index) {
+            if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+                tarefas.splice(index, 1);
+                salvarLocalStorage();
+                listarItens();
+                mostrarFeedback('Tarefa excluída com sucesso!', 'info');
+            }
+        }
+
+        // ✅ Editar item
+        function editarItem(index) {
+            const novotexto = prompt('Editar tarefa:', tarefas[index]);
+            
+            if (novotexto !== null && novotexto.trim() !== '') {
+                const textoLimpo = novotexto.trim();
+                
+                if (tarefas.includes(textoLimpo) && tarefas.indexOf(textoLimpo) !== index) {
+                    mostrarFeedback('Esta tarefa já existe na lista!', 'error');
+                    return;
+                }
+                
+                tarefas[index] = textoLimpo;
+                salvarLocalStorage();
+                listarItens();
+                mostrarFeedback('Tarefa editada com sucesso! ✏️', 'success');
+            }
+        }
+
+        // ✅ Salvar no localStorage
+        function salvarLocalStorage() {
+            localStorage.setItem('tarefas', JSON.stringify(tarefas));
+        }
+
+        // ✅ Carregar do localStorage
+        function carregarLocalStorage() {
+            const tarefasSalvas = localStorage.getItem('tarefas');
+            if (tarefasSalvas) {
+                tarefas = JSON.parse(tarefasSalvas);
+            }
+        }
+
+        // ✅ Feedback visual
+        function mostrarFeedback(mensagem, tipo) {
+            // Remover feedback anterior se existir
+            const feedbackAnterior = document.querySelector('.feedback');
+            if (feedbackAnterior) {
+                feedbackAnterior.remove();
+            }
+            
+            // Criar novo feedback
+            const feedback = document.createElement('div');
+            feedback.className = `feedback ${tipo}`;
+            feedback.textContent = mensagem;
+            document.body.appendChild(feedback);
+            
+            // Mostrar feedback
+            setTimeout(() => {
+                feedback.classList.add('show');
+            }, 100);
+            
+            // Esconder feedback após 3 segundos
+            setTimeout(() => {
+                feedback.classList.remove('show');
+                setTimeout(() => {
+                    feedback.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+O que é JSON?
+
+Formato de texto leve para troca de dados
+
+Sigla para JavaScript Object Notation
+
+Estrutura de pares chave-valor
+
+Para que é utilizado no desenvolvimento de sistemas?
+
+Transferência de dados entre cliente e servidor
+
+Armazenamento de configurações
+
+Persistência de dados (como no localStorage)
+
+APIs REST
+
+Diferença entre JSON e array/objeto JavaScript:
+
+JSON é uma string que representa dados
+
+Objetos/arrays JavaScript são estruturas de dados nativas
+
+JSON precisa ser "parseado" para virar objeto JS
+
+Objeto JS precisa ser "stringificado" para virar JSON
+
+Exemplo simples de JSON:
+
+{
+  "nome": "João",
+  "idade": 30,
+  "ativo": true
+}
+
